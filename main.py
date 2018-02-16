@@ -40,10 +40,11 @@ class ImageReader:
 
         return list(all_jpg_images)
 
-
     def process_all_images(self, image_files):
         """
         Method to load the images into RAM and then process them
+        :param image_files:
+        :return:
         """
         if type(image_files) == list:
             for el in image_files:
@@ -53,10 +54,12 @@ class ImageReader:
             image_path = os.path.join(self.file_path, image_files)
             self.process_image(image_path, image_files)
 
-
     def process_image(self, image_path, image_path_short):
         """
-        Method to load the image into RAM and then process them
+        Method to load an image into RAM and then process it
+        :param image_path:
+        :param image_path_short:
+        :return:
         """
         im_path = Image.open(image_path)
         curr_img = im_path.load()
@@ -78,6 +81,13 @@ class ImageReader:
         im_path.save(new_path)
         im_path.close()
 
+    def apply_filter(self, pixel_image, filter_kernel):
+        """
+
+        :param pixel_image:
+        :param filter_kernel:
+        :return:
+        """
 
 
 def main():
