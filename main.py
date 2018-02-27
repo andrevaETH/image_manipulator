@@ -15,17 +15,19 @@ class ImageReader:
         Constructor
         """
         # - Parameters -
-        self.file_path = "/Users/andrevanoncini/Desktop/Papi_Lokis"
-        self.new_file_path = "/Users/andrevanoncini/Desktop/Papi_Lokis/adjusted"
+        self.file_path = "/Users/andrevanoncini/Desktop/Papi_Lokis/Test"
+        self.new_file_path = "/Users/andrevanoncini/Desktop/Papi_Lokis/Test/adjusted"
+        self.aspect_ratio = 3
 
         # - These are the required actions -
         list_paths = self.collect_all_image_files(self.file_path)
         self.process_all_images(list_paths)
 
-
     def collect_all_image_files(self, file_path):
         """
         Method to collect all files and store them in list
+        :param file_path:
+        :return:
         """
         all_possible_files = os.listdir(file_path)
         all_jpg_images = []
@@ -62,16 +64,21 @@ class ImageReader:
         :return:
         """
         im_path = Image.open(image_path)
-        curr_img = im_path.load()
 
-        # - Store dimensions of image -
+        # - Store dimensions of image and crop -
         im_width = im_path.size[0]
         im_height = im_path.size[1]
 
+        new_im_height = im_height/self.aspect_ratio
+        crop_height_zero = (im_height - new_im_height)/2
+
+        im_path = im_path.crop((0, crop_height_zero, im_width, crop_height_zero + new_im_height))
+        curr_img = im_path.load()
+
         # - Replace all completely white pixels with black -
         for x in range(im_width):
-            for y in range(im_height):
-                pix_val = curr_img[x,y]
+            for y in range(new_im_height):
+                pix_val = curr_img[x, y]
 
                 if sum(pix_val) > 700:
                     curr_img[x, y] = (0, 0, 0)
@@ -83,7 +90,7 @@ class ImageReader:
 
     def apply_filter(self, pixel_image, filter_kernel):
         """
-
+        This method applies a filter to an image
         :param pixel_image:
         :param filter_kernel:
         :return:
