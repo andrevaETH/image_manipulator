@@ -5,7 +5,10 @@ Created on Feb 15 2018 3:53 PM
 """
 
 import os
-from PIL import Image
+import skimage
+from skimage import io
+import skimage.filters
+import skimage.color
 
 
 class ImageReader:
@@ -63,30 +66,35 @@ class ImageReader:
         :param image_path_short:
         :return:
         """
-        im_path = Image.open(image_path)
+        im_path = io.imread(image_path)
+        gray_im = skimage.color.rgb2gray(im_path)
 
-        # - Store dimensions of image and crop -
-        im_width = im_path.size[0]
-        im_height = im_path.size[1]
+        filter_img = skimage.filters.sobel(gray_im)
+        io.imshow(filter_img)
+        io.show()
 
-        new_im_height = im_height/self.aspect_ratio
-        crop_height_zero = (im_height - new_im_height)/2
-
-        im_path = im_path.crop((0, crop_height_zero, im_width, crop_height_zero + new_im_height))
-        curr_img = im_path.load()
-
-        # - Replace all completely white pixels with black -
-        for x in range(im_width):
-            for y in range(new_im_height):
-                pix_val = curr_img[x, y]
-
-                if sum(pix_val) > 700:
-                    curr_img[x, y] = (0, 0, 0)
-
-        # - Save in new location -
-        new_path = os.path.join(self.new_file_path, image_path_short)
-        im_path.save(new_path)
-        im_path.close()
+        # # - Store dimensions of image and crop -
+        # im_width = im_path.size[0]
+        # im_height = im_path.size[1]
+        #
+        # new_im_height = im_height/self.aspect_ratio
+        # crop_height_zero = (im_height - new_im_height)/2
+        #
+        # im_path = im_path.crop((0, crop_height_zero, im_width, crop_height_zero + new_im_height))
+        # curr_img = im_path.load()
+        #
+        # # - Replace all completely white pixels with black -
+        # for x in range(im_width):
+        #     for y in range(new_im_height):
+        #         pix_val = curr_img[x, y]
+        #
+        #         if sum(pix_val) > 700:
+        #             curr_img[x, y] = (0, 0, 0)
+        #
+        # # - Save in new location -
+        # new_path = os.path.join(self.new_file_path, image_path_short)
+        # im_path.save(new_path)
+        # im_path.close()
 
     def apply_filter(self, pixel_image, filter_kernel):
         """
