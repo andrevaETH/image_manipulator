@@ -6,9 +6,10 @@ Created on Feb 15 2018 3:53 PM
 
 import os
 import skimage
-from skimage import io
+import skimage.io
 import skimage.filters
 import skimage.color
+import skimage.feature
 
 
 class ImageReader:
@@ -59,6 +60,20 @@ class ImageReader:
             image_path = os.path.join(self.file_path, image_files)
             self.process_image(image_path, image_files)
 
+    def process_skimage(self, image_path, image_path_short):
+        """
+        Method to load an image into RAM and then process it with the skimage set
+        :param image_path:
+        :param image_path_short:
+        :return:
+        """
+        im_path = skimage.io.imread(image_path)
+        gray_im = skimage.color.rgb2gray(im_path)
+
+        filter_img = skimage.filters.gaussian(gray_im)
+        skimage.io.imshow(filter_img)
+        skimage.io.show()
+
     def process_image(self, image_path, image_path_short):
         """
         Method to load an image into RAM and then process it
@@ -66,35 +81,28 @@ class ImageReader:
         :param image_path_short:
         :return:
         """
-        im_path = io.imread(image_path)
-        gray_im = skimage.color.rgb2gray(im_path)
+        # - Store dimensions of image and crop -
+        im_width = im_path.size[0]
+        im_height = im_path.size[1]
 
-        filter_img = skimage.filters.sobel(gray_im)
-        io.imshow(filter_img)
-        io.show()
+        new_im_height = im_height/self.aspect_ratio
+        crop_height_zero = (im_height - new_im_height)/2
 
-        # # - Store dimensions of image and crop -
-        # im_width = im_path.size[0]
-        # im_height = im_path.size[1]
-        #
-        # new_im_height = im_height/self.aspect_ratio
-        # crop_height_zero = (im_height - new_im_height)/2
-        #
-        # im_path = im_path.crop((0, crop_height_zero, im_width, crop_height_zero + new_im_height))
-        # curr_img = im_path.load()
-        #
-        # # - Replace all completely white pixels with black -
-        # for x in range(im_width):
-        #     for y in range(new_im_height):
-        #         pix_val = curr_img[x, y]
-        #
-        #         if sum(pix_val) > 700:
-        #             curr_img[x, y] = (0, 0, 0)
-        #
-        # # - Save in new location -
-        # new_path = os.path.join(self.new_file_path, image_path_short)
-        # im_path.save(new_path)
-        # im_path.close()
+        im_path = im_path.crop((0, crop_height_zero, im_width, crop_height_zero + new_im_height))
+        curr_img = im_path.load()
+
+        # - Replace all completely white pixels with black -
+        for x in range(im_width):
+            for y in range(new_im_height):
+                pix_val = curr_img[x, y]
+
+                if sum(pix_val) > 700:
+                    curr_img[x, y] = (0, 0, 0)
+
+        # - Save in new location -
+        new_path = os.path.join(self.new_file_path, image_path_short)
+        im_path.save(new_path)
+        im_path.close()
 
     def apply_filter(self, pixel_image, filter_kernel):
         """
