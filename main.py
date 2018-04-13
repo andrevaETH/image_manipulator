@@ -10,6 +10,7 @@ import skimage.io
 import skimage.filters
 import skimage.color
 import skimage.feature
+from PIL import Image
 
 
 class ImageReader:
@@ -82,12 +83,14 @@ class ImageReader:
         :param image_path_short:
         :return:
         """
+        im_path = Image.open(image_path)
+
         # - Store dimensions of image and crop -
         im_width = im_path.size[0]
         im_height = im_path.size[1]
 
-        new_im_height = im_height/self.aspect_ratio
-        crop_height_zero = (im_height - new_im_height)/2
+        new_im_height = im_height / self.aspect_ratio
+        crop_height_zero = (im_height - new_im_height) / 2
 
         im_path = im_path.crop((0, crop_height_zero, im_width, crop_height_zero + new_im_height))
         curr_img = im_path.load()
