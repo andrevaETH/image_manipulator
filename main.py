@@ -70,13 +70,14 @@ class ImageReader:
         im_path = skimage.io.imread(image_path)
         gray_im = skimage.color.rgb2gray(im_path)
 
-        filter_img = skimage.filters.gaussian(gray_im)
-        skimage.io.imshow(filter_img)
-        skimage.io.show()
+        filter_img = skimage.filters.sobel(gray_im)
+        view_img = skimage.viewer.ImageViewer(filter_img)
+        view_img.show()
 
     def process_image(self, image_path, image_path_short):
         """
         Method to load an image into RAM and then process it
+        ==> not returning desirable results
         :param image_path:
         :param image_path_short:
         :return:
